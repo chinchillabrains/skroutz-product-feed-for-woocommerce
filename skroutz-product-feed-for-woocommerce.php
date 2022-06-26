@@ -13,7 +13,7 @@
 
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 
@@ -23,12 +23,12 @@ if ( ! class_exists( 'Chilla_Skroutz_Product_Feed' ) ) {
 
     //Require action scheduler
     if ( file_exists( CSPF_PLUGIN_DIR . '/vendor/woocommerce/action-scheduler/action-scheduler.php' ) ) {
-        require_once( CSPF_PLUGIN_DIR . '/vendor/woocommerce/action-scheduler/action-scheduler.php' );  
-    }
+	    require_once( CSPF_PLUGIN_DIR . '/vendor/woocommerce/action-scheduler/action-scheduler.php' );	
+	}
     // Require error log
-    if ( file_exists( CSPF_PLUGIN_DIR . '/vendor/chinchillabrains/chilla-error-log.php' ) ) {
-        require_once( CSPF_PLUGIN_DIR . '/vendor/chinchillabrains/chilla-error-log.php' );  
-    }
+	if ( file_exists( CSPF_PLUGIN_DIR . '/vendor/chinchillabrains/chilla-error-log.php' ) ) {
+		require_once( CSPF_PLUGIN_DIR . '/vendor/chinchillabrains/chilla-error-log.php' );	
+	}
 
 
     class Chilla_Skroutz_Product_Feed {
@@ -106,13 +106,13 @@ if ( ! class_exists( 'Chilla_Skroutz_Product_Feed' ) ) {
         }
 
         // Return an instance of this class.
-        public static function get_instance () {
-            // If the single instance hasn't been set, set it now.
-            if ( self::$instance == null ) {
-                self::$instance = new self;
-            }
+		public static function get_instance () {
+			// If the single instance hasn't been set, set it now.
+			if ( self::$instance == null ) {
+				self::$instance = new self;
+			}
 
-            return self::$instance;
+			return self::$instance;
         }
         
 
@@ -211,6 +211,10 @@ if ( ! class_exists( 'Chilla_Skroutz_Product_Feed' ) ) {
         private static function get_product_xml_data ( $prod_id ) {
 
             $product = wc_get_product( $prod_id );
+			
+			if ( empty( $product ) ) {
+				return '';
+			}
 
             $sku = $product->get_sku();
             $title = $product->get_title();
@@ -219,43 +223,43 @@ if ( ! class_exists( 'Chilla_Skroutz_Product_Feed' ) ) {
             $image_url = wp_get_attachment_image_src( $image_id, 'large' );
             $image_url = ( is_array( $image_url ) ? $image_url[0] : '' );
 
-            $manufacturer = $product->get_attribute( 'pa_brand' ) ;
-            $size               = $product->get_attribute( 'pa_size' ) ;
-            $color              = $product->get_attribute( 'pa_color' );
-            $dimensions         = $product->get_attribute( 'pa_dimensions' );
+			$manufacturer = $product->get_attribute( 'pa_brand' ) ;
+			$size 				= $product->get_attribute( 'pa_size' ) ;
+			$color 				= $product->get_attribute( 'pa_color' );
+            $dimensions			= $product->get_attribute( 'pa_dimensions' );
             
 
             // Get category path
             $catlist = get_the_terms( $prod_id, 'product_cat' );
-            if ( $catlist ) {
-                $last_category = end( $catlist );
+			if ( $catlist ) {
+				$last_category = end( $catlist );
 
-                foreach ( $catlist as $v => $k   ) {
-                    if ( ! $k->parent == '0' ){
-                        $last_category = $k ;
-                        break ;
-                    }
-                }
+				foreach ( $catlist as $v => $k   ) {
+					if ( ! $k->parent == '0' ){
+						$last_category = $k ;
+						break ;
+					}
+				}
 
-                $ancestors = get_ancestors( $last_category->term_id, 'product_cat', 'taxonomy' );
-                $categories_list = array();
+				$ancestors = get_ancestors( $last_category->term_id, 'product_cat', 'taxonomy' );
+				$categories_list = array();
 
-                foreach ( $ancestors as $parent ) {
-                    $term = get_term_by('id', $parent, 'product_cat');
-                    array_push($categories_list, $term->name);
-                }
+				foreach ( $ancestors as $parent ) {
+					$term = get_term_by('id', $parent, 'product_cat');
+					array_push($categories_list, $term->name);
+				}
 
-                array_push($categories_list, $last_category->name);
-                $product_cat_path = implode(' > ', $categories_list );
-                $categories_id = $last_category->term_id;
-            }
+				array_push($categories_list, $last_category->name);
+				$product_cat_path = implode(' > ', $categories_list );
+				$categories_id = $last_category->term_id;
+			}
 
             $availability_txt = 'Παράδοση σε 4 - 10 ημέρες';
-            $delivery_days = $product->get_meta( 'skroutz_delivery_days', true );
-            if ( ! empty( $delivery_days ) && $delivery_days != 'Default' ) {
-                $availability_txt = $delivery_days;
-            }
-            
+			$delivery_days = $product->get_meta( 'skroutz_delivery_days', true );
+			if ( ! empty( $delivery_days ) && $delivery_days != 'Default' ) {
+				$availability_txt = $delivery_days;
+			}
+			
             $price = $product->get_price();
 
             $write_data = array(
@@ -487,14 +491,14 @@ if ( ! class_exists( 'Chilla_Skroutz_Product_Feed' ) ) {
         }
 
         public static function filter_products_skip ( $prod_arr ) {
-            $price = (float) $prod_arr['price_with_vat']['content'];
+			$price = (float) $prod_arr['price_with_vat']['content'];
             if ( $price < 10 ) {
                 $skip = true;
             } else {
                 $skip = false;
             }
-            
-            return $skip;
+			
+			return $skip;
 
         }
 
